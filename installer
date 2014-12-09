@@ -1,0 +1,97 @@
+#!/usr/bin/env php
+<?php
+class Installer
+{
+    private $virtualHostService;
+
+    public function __construct($virtualHostService)
+    {
+        $this->virtualHostService = $virtualHostService;
+    }
+
+    public function execute(Configuration $configuration)
+    {
+        $this->virtualHostService
+            ->handle($configuration);
+    }
+}
+
+class Configuration
+{
+    const configFile = "config.json";
+
+    private $configFile;
+
+    public function __construct($configFile = self::configFile)
+    {
+        $this->configFile = $configFile;
+    }
+
+    public function getConfiguration()
+    {
+        $configResource = file_get_contents($this->configFile);
+        $config         = json_decode($configResource, true);
+
+        if (is_null($config)) {
+            $configResource = file_get_contents(self::configFile);
+            $config         = json_decode($configResource, true);
+        }
+
+        return $config;
+    }
+}
+
+class VirtualHostService
+{
+    public function handle(Configuration $configuration)
+    {
+        $configuration = $configuration->getConfiguration();
+
+        if (isset($configuration["virtualHost"]) && isset($configuration["installScript"])) {
+            return $this->handleVirtualHost($configuration);
+        }
+
+        if (isset($configuration["path"]) && isset($configuration["installScript"])) {
+            return $this->handlePath($configuration);
+        }
+
+        throw new \InvalidArgumentException("Configuration must have 'virtualHost' or 'path' AND 'installScript'");
+    }
+
+    private function handleVirtualHost($configuration)
+    {
+        $command = 'echo "%s" > /etc/apache2/sites-available/000-default.conf && service apache2 restart; %s';
+
+        return shell_exec(sprintf($command, $configuration["VirtualHost"], $configuration["installScript"]));
+    }
+
+    private function handlePath($configuration)
+    {
+        $file = <<<'END'
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        DocumentRoot %s
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+END;
+        $file    = sprintf($file, $configuration["path"]);
+        $command = 'echo "%s" > /etc/apache2/sites-enabled/000-default.conf && service apache2 restart; %s';
+
+        return shell_exec(sprintf($command, $file, $configuration["installScript"]));
+    }
+}
+
+$configFile = "config.json";
+if (isset($argv[1])) {
+    $configFile = $argv[1];
+}
+
+$configuration = new Configuration($configFile);
+$installer     = new Installer(new VirtualHostService());
+
+$installer->execute($configuration);
