@@ -85,7 +85,7 @@ END;
 
     private function saveHost($param, $script)
     {
-        $command = 'echo "%s" > /etc/apache2/sites-enabled/000-default.conf && service apache2 restart; curl %s > script.sh; chmod +x script.sh; ./script.sh';
+        $command = 'echo "%s" > /etc/apache2/sites-enabled/000-default.conf; curl %s > script.sh; chmod +x script.sh; ./script.sh; ./run.sh';
 
         return shell_exec(sprintf($command, $param, $script));
     }
