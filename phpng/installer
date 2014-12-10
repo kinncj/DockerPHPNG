@@ -11,7 +11,7 @@ class Installer
 
     public function execute(Configuration $configuration)
     {
-        $this->virtualHostService
+        return $this->virtualHostService
             ->handle($configuration);
     }
 }
@@ -69,13 +69,13 @@ class VirtualHostService
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
         DocumentRoot %s
+        ServerName localhost
 
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 
 </VirtualHost>
 
-# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 END;
 
         $file = sprintf($file, $configuration["path"]);
@@ -99,4 +99,4 @@ if (isset($argv[1])) {
 $configuration = new Configuration($configFile);
 $installer     = new Installer(new VirtualHostService());
 
-$installer->execute($configuration);
+echo $installer->execute($configuration);

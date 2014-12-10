@@ -35,4 +35,4 @@ RUN apt-get install -yq git \
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 EXPOSE 80
-CMD ["run.sh"]
+CMD ["./run.sh"]
