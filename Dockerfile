@@ -2,8 +2,8 @@ FROM ubuntu:trusty
 
 MAINTAINER Kinn Coelho Julião <kinncj@php.net>
 
-RUN mkdir -p ~/tmp
-WORKDIR ~/tmp
+ADD ./phpng /opt/phpng/
+WORKDIR /opt/phpng/
 
 RUN echo 'PHPNG Docker'
 
@@ -34,3 +34,4 @@ RUN apt-get install -yq git \
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 EXPOSE 80
+CMD ["php", "installer"]
