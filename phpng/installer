@@ -78,6 +78,8 @@ class VirtualHostService
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 END;
 
+        $file = sprintf($file, $configuration["path"]);
+
         return $this->saveHost($file, $configuration["installScript"]);
     }
 
