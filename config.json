@@ -1,4 +1,4 @@
 {
-    "path": "/var/www",
+    "path": "/var/www/symfony2/app",
     "installScript": "https://raw.githubusercontent.com/kinncj/DockerPHPNG/master/demoscript.sh"
 }
