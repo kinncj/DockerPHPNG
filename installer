@@ -60,9 +60,7 @@ class VirtualHostService
 
     private function handleVirtualHost($configuration)
     {
-        $command = 'echo "%s" > /etc/apache2/sites-available/000-default.conf && service apache2 restart; %s';
-
-        return shell_exec(sprintf($command, $configuration["VirtualHost"], $configuration["installScript"]));
+        return $this->saveHost($configuration["VirtualHost"], $configuration["installScript"]);
     }
 
     private function handlePath($configuration)
@@ -79,10 +77,15 @@ class VirtualHostService
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 END;
-        $file    = sprintf($file, $configuration["path"]);
-        $command = 'echo "%s" > /etc/apache2/sites-enabled/000-default.conf && service apache2 restart; %s';
 
-        return shell_exec(sprintf($command, $file, $configuration["installScript"]));
+        return $this->saveHost($file, $configuration["installScript"]);
+    }
+
+    private function saveHost($param, $script)
+    {
+        $command = 'echo "%s" > /etc/apache2/sites-enabled/000-default.conf && service apache2 restart; curl %s > script.sh; chmod +x script.sh; ./script.sh';
+
+        return shell_exec(sprintf($command, $param, $script));
     }
 }
 

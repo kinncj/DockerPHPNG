@@ -1,4 +1,4 @@
 {
     "path": "/var/www",
-    "installScript": ""
+    "installScript": "https://raw.githubusercontent.com/kinncj/DockerPHPNG/master/demoscript.sh"
 }
